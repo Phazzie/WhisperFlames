@@ -1,0 +1,21 @@
+name: <SEAM_NAME>
+version: v1
+versionDate: "<ISO_TIMESTAMP>"
+owner: "TODO – team or person"
+description: "TODO – short business description"
+inputs:
+  # Pre-seeded from ioHints
+outputs:
+  # Pre-seeded from ioHints
+errors:
+  ValidationError:
+    type: object
+    properties:
+      message:
+        type: string
+      code:
+        type: number
+examples:
+  - name: "Basic example"
+    in: {}
+    out: {}

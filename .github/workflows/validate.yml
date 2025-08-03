@@ -1,0 +1,42 @@
+name: validate
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Lint YAML contracts
+      run: |
+        if [ -d "contracts" ] && [ "$(ls -A contracts)" ]; then
+          npm run lint:yaml
+        else
+          echo "No contracts to lint - skipping"
+        fi
+        
+    - name: Check contract examples
+      run: npm run check:examples
+      
+    - name: Lock contracts directory
+      run: |
+        if [ -d "contracts" ] && [ "$(ls -A contracts)" ]; then
+          chmod -R 444 contracts
+          echo "✅ Contracts directory locked (read-only)"
+        else
+          echo "No contracts to lock - skipping"
+        fi
