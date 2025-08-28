@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import yaml from 'yaml';
-import { Seam, Contract } from '../types.js';
+import { Seam } from '../types.js';
 
 /**
  * Generate YAML contracts from seams using the contract template

@@ -1,0 +1,1 @@
+User Input → Device Selection → AI Generation → Output Display

@@ -1,0 +1,377 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sdd.local/schemas/contract.v1.json",
+  "title": "SDD Contract Schema",
+  "description": "JSON Schema for validating SDD contract YAML files",
+  "type": "object",
+  "required": [
+    "name",
+    "version", 
+    "versionDate",
+    "description",
+    "category",
+    "inputs",
+    "outputs",
+    "errors",
+    "examples"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Z][a-zA-Z0-9]*Seam$",
+      "description": "Seam name in PascalCase ending with 'Seam'"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$",
+      "description": "Version in format v1, v2, v3, etc."
+    },
+    "versionDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 date when this version was created"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500,
+      "description": "Clear description of what this seam does"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["api", "persistence", "computation", "integration", "ui"],
+      "description": "Category of seam for organizational purposes"
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["request"],
+      "properties": {
+        "request": {
+          "$ref": "#/definitions/schemaObject"
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["success", "error"],
+      "properties": {
+        "success": {
+          "type": "object",
+          "required": ["type", "required", "properties"],
+          "properties": {
+            "type": { "const": "object" },
+            "required": {
+              "type": "array",
+              "items": { "type": "string" },
+              "contains": { "const": "ok" },
+              "minItems": 1
+            },
+            "properties": {
+              "type": "object",
+              "required": ["ok", "data"],
+              "properties": {
+                "ok": {
+                  "type": "object",
+                  "required": ["type", "const"],
+                  "properties": {
+                    "type": { "const": "boolean" },
+                    "const": { "const": true }
+                  }
+                },
+                "data": {
+                  "$ref": "#/definitions/schemaObject"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "error": {
+          "type": "object",
+          "required": ["type", "required", "properties"],
+          "properties": {
+            "type": { "const": "object" },
+            "required": {
+              "type": "array",
+              "items": { "type": "string" },
+              "contains": { "const": "ok" },
+              "minItems": 1
+            },
+            "properties": {
+              "type": "object",
+              "required": ["ok", "errors"],
+              "properties": {
+                "ok": {
+                  "type": "object",
+                  "properties": {
+                    "type": { "const": "boolean" },
+                    "const": { "const": false }
+                  }
+                },
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "type": { "const": "array" },
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": { "const": "object" },
+                        "properties": {
+                          "type": "object",
+                          "required": ["code", "message"],
+                          "properties": {
+                            "code": {
+                              "type": "object",
+                              "properties": { "type": { "const": "string" } }
+                            },
+                            "message": {
+                              "type": "object", 
+                              "properties": { "type": { "const": "string" } }
+                            },
+                            "details": {
+                              "type": "object",
+                              "properties": { "type": { "const": "object" } }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "errors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["code", "name", "description", "httpStatus", "retryable"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z_]+$",
+            "description": "Error code in UPPER_SNAKE_CASE"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Z][a-zA-Z]*Error$",
+            "description": "Error class name ending with 'Error'"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Clear description of when this error occurs"
+          },
+          "httpStatus": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599,
+            "description": "HTTP status code for this error"
+          },
+          "retryable": {
+            "type": "boolean",
+            "description": "Whether this error is retryable"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "examples": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "input", "output"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "description": "Name of the example"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Description of what this example demonstrates"
+          },
+          "input": {
+            "type": "object",
+            "description": "Example input data"
+          },
+          "output": {
+            "type": "object",
+            "required": ["ok", "data"],
+            "properties": {
+              "ok": { "const": true },
+              "data": {
+                "type": "object",
+                "description": "Example output data"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "errorExamples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "input", "output"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10
+          },
+          "input": {
+            "type": "object"
+          },
+          "output": {
+            "type": "object",
+            "required": ["ok", "errors"],
+            "properties": {
+              "ok": { "const": false },
+              "errors": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "properties": {
+                    "code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "details": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["seam", "version", "type"],
+        "properties": {
+          "seam": {
+            "type": "string",
+            "pattern": "^[A-Z][a-zA-Z0-9]*Seam$"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^v[0-9]+$"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["required", "optional", "dev"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["generatedBy", "lastModified", "tags", "stability"],
+      "properties": {
+        "generatedBy": {
+          "type": "string",
+          "pattern": "^SDD Generator v[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "stability": {
+          "type": "string",
+          "enum": ["experimental", "stable", "deprecated"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "schemaObject": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["object", "array", "string", "number", "integer", "boolean", "null"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "required": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "properties": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "$ref": "#/definitions/schemaProperty"
+            }
+          }
+        },
+        "items": {
+          "$ref": "#/definitions/schemaProperty"
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "validation": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "schemaProperty": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["object", "array", "string", "number", "integer", "boolean", "null"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "validation": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "$ref": "#/definitions/schemaProperty"
+            }
+          }
+        },
+        "items": {
+          "$ref": "#/definitions/schemaProperty"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,21 +1,118 @@
-name: <SEAM_NAME>
-version: v1
-versionDate: "<ISO_TIMESTAMP>"
-owner: "TODO – team or person"
-description: "TODO – short business description"
+# SDD Contract Template v1.0
+# Generated: {{timestamp}}
+# Purpose: {{description}}
+
+name: "{{seamName}}"
+version: "{{version}}"
+versionDate: "{{versionDate}}"
+description: "{{description}}"
+category: "{{category}}" # api, persistence, computation, integration, ui
+
+# Input schema (what this seam accepts)
 inputs:
-  # Pre-seeded from ioHints
-outputs:
-  # Pre-seeded from ioHints
-errors:
-  ValidationError:
-    type: object
+  # Primary input object
+  request:
+    type: "object"
+    required: {{requiredInputs}}
     properties:
-      message:
-        type: string
-      code:
-        type: number
+{{#inputProperties}}
+      {{name}}:
+        type: "{{type}}"
+        description: "{{description}}"
+        {{#optional}}optional: true{{/optional}}
+        {{#validation}}validation: {{validation}}{{/validation}}
+{{/inputProperties}}
+
+# Output schema (what this seam returns)  
+outputs:
+  # Success response
+  success:
+    type: "object"
+    required: ["ok", "data"]
+    properties:
+      ok:
+        type: "boolean"
+        const: true
+      data:
+        type: "object"
+        properties:
+{{#outputProperties}}
+          {{name}}:
+            type: "{{type}}"
+            description: "{{description}}"
+{{/outputProperties}}
+  
+  # Error response
+  error:
+    type: "object"
+    required: ["ok", "errors"]
+    properties:
+      ok:
+        type: "boolean"
+        const: false
+      errors:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            code: {type: "string"}
+            message: {type: "string"}
+            details: {type: "object"}
+
+# Error definitions
+errors:
+{{#errorTypes}}
+  - code: "{{code}}"
+    name: "{{name}}"
+    description: "{{description}}"
+    httpStatus: {{httpStatus}}
+    retryable: {{retryable}}
+{{/errorTypes}}
+
+# Required examples (minimum 1)
 examples:
-  - name: "Basic example"
-    in: {}
-    out: {}
+{{#examples}}
+  - name: "{{name}}"
+    description: "{{description}}"
+    input:
+{{#inputData}}
+      {{key}}: {{value}}
+{{/inputData}}
+    output:
+      ok: true
+      data:
+{{#outputData}}
+        {{key}}: {{value}}
+{{/outputData}}
+{{/examples}}
+
+# Error examples
+errorExamples:
+{{#errorExamples}}
+  - name: "{{name}}"
+    description: "{{description}}"
+    input:
+{{#inputData}}
+      {{key}}: {{value}}
+{{/inputData}}
+    output:
+      ok: false
+      errors:
+        - code: "{{errorCode}}"
+          message: "{{errorMessage}}"
+{{/errorExamples}}
+
+# Dependencies (other seams this one uses)
+dependencies:
+{{#dependencies}}
+  - seam: "{{seamName}}"
+    version: "{{version}}"
+    type: "{{type}}" # required, optional, dev
+{{/dependencies}}
+
+# Contract metadata
+metadata:
+  generatedBy: "SDD Generator v{{generatorVersion}}"
+  lastModified: "{{timestamp}}"
+  tags: {{tags}}
+  stability: "{{stability}}" # experimental, stable, deprecated

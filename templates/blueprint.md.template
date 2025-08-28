@@ -1,0 +1,311 @@
+# 📋 {{seamName}} Seam Blueprint
+
+> **🔥 IMPLEMENTATION GUIDE 🔥**  
+> This blueprint provides everything you need to implement the `{{seamName}}` seam correctly and efficiently.
+
+---
+
+## 📊 **Generation Metadata**
+
+| Property | Value |
+|----------|-------|
+| **Generated** | `{{timestamp}}` |
+| **Contract** | `{{contractFile}}` |
+| **Version** | `{{version}}` |
+| **Category** | `{{category}}` |
+| **Stability** | `{{stability}}` |
+| **Generator** | `SDD Generator v{{generatorVersion}}` |
+
+---
+
+## 🎯 **Seam Purpose**
+
+{{description}}
+
+### **Why This Seam Exists**
+This seam represents a **boundary** in your system where {{category}} operations occur. It provides a clean interface for {{description}} while maintaining strict input/output contracts and error handling.
+
+### **When To Use This Seam**
+- ✅ When you need {{description}}
+- ✅ When integrating with {{category}} systems
+- ✅ When you want type-safe, contract-compliant operations
+- ❌ Do NOT use for simple utility functions that don't cross boundaries
+
+---
+
+## 📋 **Contract Summary**
+
+| Property | Value |
+|----------|-------|
+| **Name** | `{{seamName}}` |
+| **Version** | `{{version}}` |
+| **Category** | `{{category}}` |
+| **Stability** | `{{stability}}` |
+| **Dependencies** | {{#dependencies}}`{{seamName}}`{{#hasNext}}, {{/hasNext}}{{/dependencies}} |
+
+## Input Schema
+
+```typescript
+interface {{seamName}}Input {
+{{#inputProperties}}
+  {{name}}{{#optional}}?{{/optional}}: {{type}};{{#description}} // {{description}}{{/description}}
+{{/inputProperties}}
+}
+```
+
+### Input Validation Rules
+
+{{#inputProperties}}
+- **`{{name}}`** ({{type}}){{#optional}} - Optional{{/optional}}{{^optional}} - Required{{/optional}}
+  {{#description}}- {{description}}{{/description}}
+  {{#validation}}- Validation: `{{validation}}`{{/validation}}
+{{/inputProperties}}
+
+## Output Schema
+
+```typescript
+interface {{seamName}}Output {
+{{#outputProperties}}
+  {{name}}{{#optional}}?{{/optional}}: {{type}};{{#description}} // {{description}}{{/description}}
+{{/outputProperties}}
+}
+```
+
+### Success Response
+
+```typescript
+{
+  ok: true,
+  data: {{seamName}}Output
+}
+```
+
+### Error Response
+
+```typescript
+{
+  ok: false,
+  errors: Array<{
+    code: string,
+    message: string,
+    details?: Record<string, unknown>
+  }>
+}
+```
+
+## Error Types
+
+{{#errorTypes}}
+### {{name}}
+
+- **Code:** `{{code}}`
+- **HTTP Status:** `{{httpStatus}}`
+- **Retryable:** {{retryable}}
+- **Description:** {{description}}
+
+{{/errorTypes}}
+
+## Examples
+
+{{#examples}}
+### {{name}}
+
+**Description:** {{description}}
+
+**Input:**
+```json
+{{inputJson}}
+```
+
+**Output:**
+```json
+{{outputJson}}
+```
+
+{{/examples}}
+
+## Error Examples
+
+{{#errorExamples}}
+### {{name}} Error
+
+**Description:** {{description}}
+
+**Input:**
+```json
+{{inputJson}}
+```
+
+**Error Response:**
+```json
+{
+  "ok": false,
+  "errors": [
+    {
+      "code": "{{errorCode}}",
+      "message": "{{errorMessage}}"
+    }
+  ]
+}
+```
+
+{{/errorExamples}}
+
+## Implementation Guide
+
+### 1. Basic Implementation
+
+```typescript
+import { {{seamName}}SeamBase, {{seamName}}Input, {{seamName}}Response } from './generated/{{seamName}}Seam';
+
+class My{{seamName}}Implementation extends {{seamName}}SeamBase {
+  async process(input: {{seamName}}Input): Promise<{{seamName}}Response> {
+    try {
+      // Your implementation here
+      const result = await this.doProcessing(input);
+      
+      return this.createSuccessResponse(result);
+    } catch (error) {
+      return this.createErrorResponse([{
+        code: 'PROCESSING_ERROR',
+        message: error.message
+      }]);
+    }
+  }
+  
+  private async doProcessing(input: {{seamName}}Input) {
+    // TODO: Implement your business logic
+    throw new Error('Not implemented');
+  }
+}
+```
+
+### 2. Usage Example
+
+```typescript
+const seam = new My{{seamName}}Implementation();
+
+// Process input
+const response = await seam.process({{successExampleInput}});
+
+if (response.ok) {
+  console.log('Success:', response.data);
+} else {
+  console.error('Errors:', response.errors);
+}
+```
+
+### 3. Testing
+
+```typescript
+import { {{seamName}}Example } from './generated/{{seamName}}Seam';
+
+describe('{{seamName}}Seam', () => {
+  it('should handle success case', async () => {
+    const seam = new My{{seamName}}Implementation();
+    const response = await seam.process({{seamName}}Example.successExample.input);
+    
+    expect(response.ok).toBe(true);
+    if (response.ok) {
+      expect(response.data).toEqual({{seamName}}Example.successExample.expectedOutput);
+    }
+  });
+  
+  it('should handle error cases', async () => {
+    // Test error scenarios using {{seamName}}Example.errorExamples
+  });
+});
+```
+
+## Dependencies
+
+{{#dependencies}}
+### {{seamName}} ({{version}})
+
+**Type:** {{type}}  
+**Required:** {{#required}}Yes{{/required}}{{^required}}No{{/required}}
+
+{{/dependencies}}
+
+## Integration Notes
+
+### HTTP Endpoint Integration
+
+If exposing this seam via HTTP:
+
+```typescript
+app.post('/{{seamName}}', async (req, res) => {
+  const seam = new My{{seamName}}Implementation();
+  
+  if (!seam.validateInput(req.body)) {
+    return res.status(400).json({
+      ok: false,
+      errors: [{ code: 'INVALID_INPUT', message: 'Input validation failed' }]
+    });
+  }
+  
+  const response = await seam.process(req.body);
+  const statusCode = response.ok ? 200 : 400;
+  
+  res.status(statusCode).json(response);
+});
+```
+
+### Event-Driven Integration
+
+```typescript
+// Subscribe to events
+eventBus.on('{{seamName}}.process', async (input) => {
+  const seam = new My{{seamName}}Implementation();
+  const response = await seam.process(input);
+  
+  if (response.ok) {
+    eventBus.emit('{{seamName}}.success', response.data);
+  } else {
+    eventBus.emit('{{seamName}}.error', response.errors);
+  }
+});
+```
+
+## Monitoring & Observability
+
+### Metrics to Track
+
+- Request rate
+- Success/error rates  
+- Processing latency
+- {{#errorTypes}}`{{code}}` error frequency{{/errorTypes}}
+
+### Logging
+
+```typescript
+class My{{seamName}}Implementation extends {{seamName}}SeamBase {
+  async process(input: {{seamName}}Input): Promise<{{seamName}}Response> {
+    const startTime = Date.now();
+    const requestId = generateRequestId();
+    
+    logger.info('{{seamName}}.process.start', { requestId, input });
+    
+    try {
+      const result = await this.doProcessing(input);
+      const duration = Date.now() - startTime;
+      
+      logger.info('{{seamName}}.process.success', { requestId, duration });
+      return this.createSuccessResponse(result);
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      
+      logger.error('{{seamName}}.process.error', { requestId, error: error.message, duration });
+      return this.createErrorResponse([{
+        code: 'PROCESSING_ERROR',
+        message: error.message
+      }]);
+    }
+  }
+}
+```
+
+---
+
+**Generated by SDD Generator v{{generatorVersion}}**  
+**Last Updated:** {{timestamp}}

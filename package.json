@@ -4,25 +4,40 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node --esm src/server.ts",
+  "dev": "npx tsx watch src/server.ts",
+  "rnb:dev": "node rnb-lyrics-generator/dev-server.js",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint:yaml": "node scripts/yamlLint.js",
     "check:examples": "node scripts/checkExamples.js",
     "prepare": "husky install",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "sdd:validate": "npm run lint:yaml && npm run check:examples",
+    "sdd:compliance": "node scripts/sddCheck.js",
+    "sdd:safe": "npm run sdd:compliance && echo \"✅ SDD compliance verified - implementation may proceed\"",
+    "sdd:seams": "curl -X POST http://localhost:3333/seams -H \"Content-Type: application/json\" -d \"{}\"",
+    "sdd:contracts": "curl -X POST http://localhost:3333/contracts -H \"Content-Type: application/json\" -d \"{}\"",
+    "sdd:generate": "curl -X POST http://localhost:3333/generate -H \"Content-Type: application/json\" -d \"{}\"",
+    "sdd:workflow": "npm run sdd:validate && echo \"✅ Ready for SDD workflow\"",
+    "sdd:status": "node scripts/sdd-helper.js seam-status",
+    "sdd:check": "node scripts/sdd-helper.js validate-structure",
+    "sdd:help": "node scripts/sdd-helper.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "express": "^4.18.2",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
-    "ts-node": "^10.9.0",
-    "typescript": "^5.0.0",
-    "js-yaml": "^4.1.0",
-    "husky": "^8.0.0",
     "@types/express": "^4.17.21",
+    "@types/js-yaml": "^4.0.5",
+    "@types/mustache": "^4.2.6",
     "@types/node": "^20.0.0",
-    "@types/js-yaml": "^4.0.5"
+    "husky": "^8.0.0",
+    "js-yaml": "^4.1.0",
+    "mustache": "^4.2.0",
+    "ts-node": "^10.9.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.0.0"
   }
 }

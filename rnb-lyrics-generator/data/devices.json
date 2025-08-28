@@ -1,0 +1,121 @@
+[
+  {
+    "id": "alliteration",
+    "name": "Alliteration",
+    "definition": "Repetition of initial consonant sounds in nearby words for musical effect.",
+    "example": "Silken satin sheets, slow songs, and soft smiles.",
+    "category": "core"
+  },
+  {
+    "id": "assonance",
+    "name": "Assonance",
+    "definition": "Repetition of vowel sounds in close proximity to create internal rhyme.",
+    "example": "These smooth tunes soothe the room.",
+    "category": "core"
+  },
+  {
+    "id": "consonance",
+    "name": "Consonance",
+    "definition": "Repetition of consonant sounds, typically at the end or middle of words.",
+    "example": "Soft beats, sweet nights, lost notes.",
+    "category": "core"
+  },
+  {
+    "id": "metaphor",
+    "name": "Metaphor",
+    "definition": "A direct comparison between two things without using 'like' or 'as'.",
+    "example": "Your love is velvet on my skin.",
+    "category": "core"
+  },
+  {
+    "id": "simile",
+    "name": "Simile",
+    "definition": "A comparison using the words 'like' or 'as'.",
+    "example": "Like vinyl crackle, you take me back.",
+    "category": "core"
+  },
+  {
+    "id": "personification",
+    "name": "Personification",
+    "definition": "Giving human qualities to nonhuman things.",
+    "example": "The city sighs our chorus through the alleyways.",
+    "category": "core"
+  },
+  {
+    "id": "hyperbole",
+    "name": "Hyperbole",
+    "definition": "Deliberate and obvious exaggeration used for emphasis or effect.",
+    "example": "I'd hold the whole sky just to keep your light.",
+    "category": "core"
+  },
+  {
+    "id": "antithesis",
+    "name": "Antithesis",
+    "definition": "Juxtaposition of contrasting ideas in parallel structure.",
+    "example": "We fall in silence, we rise in song.",
+    "category": "core"
+  },
+  {
+    "id": "chiasmus",
+    "name": "Chiasmus",
+    "definition": "Reversal of grammatical structures in successive phrases.",
+    "example": "I love the rhythm, and the rhythm loves me.",
+    "category": "core"
+  },
+  {
+    "id": "anaphora",
+    "name": "Anaphora",
+    "definition": "Repetition of a word or phrase at the beginning of successive clauses.",
+    "example": "I need your touch, I need your truth, I need your tune.",
+    "category": "core"
+  },
+  {
+    "id": "epistrophe",
+    "name": "Epistrophe",
+    "definition": "Repetition of a word or phrase at the end of successive clauses.",
+    "example": "Sing with me tonight, stay with me tonight, be my only tonight.",
+    "category": "core"
+  },
+  {
+    "id": "pun",
+    "name": "Pun",
+    "definition": "A play on words that exploits multiple meanings or similar sounds.",
+    "example": "You're my sole mate in these soul grooves.",
+    "category": "core"
+  },
+  {
+    "id": "analogy",
+    "name": "Analogy",
+    "definition": "An extended comparison used to explain or clarify.",
+    "example": "Loving you is like a needle finding the groove—steady and true.",
+    "category": "core"
+  },
+  {
+    "id": "litotes",
+    "name": "Litotes",
+    "definition": "An understatement that uses a negative to express a positive.",
+    "example": "I'm not unhappy when you call at 2 a.m.",
+    "category": "core"
+  },
+  {
+    "id": "anadiplosis",
+    "name": "Anadiplosis",
+    "definition": "Repetition of the last word of one clause at the beginning of the next.",
+    "example": "Your touch sparks a fire, a fire that lights the room.",
+    "category": "core"
+  },
+  {
+    "id": "polyptoton",
+    "name": "Polyptoton",
+    "definition": "Repetition of words derived from the same root.",
+    "example": "We love to be in love, loving the love we make.",
+    "category": "core"
+  },
+  {
+    "id": "epanorthosis",
+    "name": "Epanorthosis",
+    "definition": "Immediate rephrasing or correction to intensify meaning.",
+    "example": "You're perfect—no, better—you're my favorite verse.",
+    "category": "core"
+  }
+]

@@ -1,60 +1,121 @@
-# Seam-Driven Development (SDD) Proof-of-Concept
+# Seam-Driven Development (SDD) Proof of Concept
 
-A minimal MCP server demonstrating Seam-Driven Development principles using TypeScript, Express, and pnpm.
+A TypeScript MCP server demonstrating Seam-Driven Development methodology with complete guardrails and automation.
 
-## 🛡️ Guardrails Active
+## � SDD Workflow (ENFORCED)
 
-- **Pre-commit hook**: Blocks manual edits to `src/generated/` without `Manual-Patch: <SeamName>` trailer
-- **CI validation**: YAML lint + contract examples check + read-only contracts
-- **Strong typing**: TypeScript interfaces for all SDD entities
-
-## 📁 Project Structure
-
-```
-sdd-poc/
-├── src/
-│   ├── server.ts           # Express server + 5 endpoints
-│   ├── types.ts            # TypeScript interfaces
-│   ├── services/           # Business logic modules
-│   └── generated/          # Auto-generated stubs (🚧 read-only)
-├── templates/
-│   └── contract_stub.yml   # YAML template
-├── contracts/              # Generated contracts (immutable)
-├── blueprints/             # Generated blueprints
-├── tmp/                    # PRD cache
-├── scripts/
-│   └── checkExamples.js    # Contract validation
-└── .github/workflows/
-    └── validate.yml        # CI pipeline
+### 1. **Identify Seams First**
+```bash
+npm run sdd:seams
+# OR
+curl -X POST http://localhost:3333/seams -H "Content-Type: application/json" -d '{"requirements": "your requirements"}'
 ```
 
-## 🚀 Getting Started
+### 2. **Generate Contracts**
+```bash
+npm run sdd:contracts
+# OR  
+curl -X POST http://localhost:3333/contracts -H "Content-Type: application/json" -d '{"seams": [...]}'
+```
+
+### 3. **Validate Everything**
+```bash
+npm run sdd:validate
+```
+
+### 4. **Generate Code Stubs**
+```bash
+npm run sdd:generate
+```
+
+## 📁 SDD Project Structure
+
+```
+src/
+  generated/      🚧 READ-ONLY auto-generated stubs
+  services/       ✅ Business logic implementations
+contracts/        🔒 IMMUTABLE versioned YAML contracts  
+templates/        📝 Contract templates
+blueprints/       📋 Generated documentation
+scripts/          🛠 SDD automation helpers
+.vscode/          🎯 VS Code SDD tasks
+```
+
+## 🛡️ Built-in Guardrails
+
+### **Pre-commit Hooks (Husky)**
+- ❌ Blocks contract edits (forces versioning)
+- ❌ Blocks manual edits to `src/generated/` without `Manual-Patch:` trailer
+- ✅ Validates YAML syntax
+- ✅ Validates contract examples
+
+### **VS Code Tasks**
+- `Ctrl+Shift+P` → "Tasks: Run Task"
+- **SDD: Start Server** - Launches development server
+- **SDD: Validate Contracts** - Runs full validation
+- **SDD: Check Structure** - Validates SDD compliance
+
+### **NPM Scripts**
+```bash
+npm run sdd:status      # Show defined seams
+npm run sdd:check       # Validate project structure  
+npm run sdd:validate    # Full contract validation
+npm run sdd:help        # Show SDD commands
+```
+
+## 🚀 Quick Start
+
+1. **Install & Setup**
+   ```bash
+   npm install
+   npm run sdd:check
+   ```
+
+2. **Start Development Server**
+   ```bash
+   npm run dev
+   # Server runs on http://localhost:3333
+   ```
+
+3. **Follow SDD Workflow**
+   ```bash
+   npm run sdd:help
+   ```
+
+## 🔍 API Endpoints
+
+- `POST /requirements` - Cache requirements analysis ✅
+- `POST /seams` - Detect boundaries in requirements 🚧
+- `POST /contracts` - Generate YAML contracts from seams 🚧  
+- `POST /validate` - Validate contract schemas & examples 🚧
+- `POST /generate` - Generate TypeScript stubs & docs 🚧
+
+## 🚨 SDD Rules (AUTO-ENFORCED)
+
+1. **Seams First** - No implementation without boundary identification
+2. **Contracts Before Code** - All seams must have contracts
+3. **Generation Over Editing** - Auto-generate instead of manual coding
+4. **Immutable Contracts** - Version up (v2, v3...) instead of editing
+5. **Validation Always** - Every commit validates contracts
+
+## � Development
+
+**This project uses SDD to build SDD** - we follow our own methodology:
+
+- Identify seams before implementing endpoints
+- Create contracts for each endpoint 
+- Generate TypeScript stubs from contracts
+- Implement business logic in services/
+- Validate before every commit
+
+## 📝 Manual Override
+
+If you must manually edit generated files:
 
 ```bash
-# Install dependencies
-npm install
+git commit -m "Fix: endpoint bug
 
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
+Manual-Patch: YourSeamName"
 ```
 
-## 🔄 SDD Workflow (5 Endpoints)
-
-1. **POST /requirements** - Store PRD text
-2. **POST /seams** - Detect seams with LLM
-3. **POST /contracts** - Generate YAML contracts
-4. **POST /validate** - Validate contracts + examples
-5. **POST /generate** - Create code stubs + blueprints
-
-## 📋 Manual-Patch Tracking
-
-When editing files in `src/generated/`, add this trailer to your commit:
-
-```
-Manual-Patch: SeamName
-```
-
-This enables future two-strike regeneration logic.
+The `Manual-Patch:` trailer tells the system this is intentional.

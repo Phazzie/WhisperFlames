@@ -1,0 +1,318 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * {{seamName}} Seam Tests - Auto-Generated Test Scaffold
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * 🧪 GENERATED TEST SCAFFOLD - EXTEND WITH YOUR TESTS! 🧪
+ * 
+ * This file provides a comprehensive test foundation for the {{seamName}} seam.
+ * It includes contract compliance tests, example validation, and test utilities.
+ * 
+ * ─────────────────────────────────────────────────────────────────────────────
+ * GENERATION DETAILS
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Generated: {{timestamp}}
+ * Contract:  {{contractFile}}
+ * Version:   {{version}}
+ * Category:  {{category}}
+ * 
+ * ─────────────────────────────────────────────────────────────────────────────
+ * TESTING STRATEGY
+ * ─────────────────────────────────────────────────────────────────────────────
+ * This test suite validates:
+ * ✅ Contract compliance (metadata, input validation)
+ * ✅ Success cases from contract examples
+ * ✅ Error cases and error type behavior
+ * ✅ Type guards and response validation
+ * ✅ Factory function behavior
+ * 
+ * YOU SHOULD ADD:
+ * 🔧 Integration tests with real dependencies
+ * 🔧 Performance and load tests
+ * 🔧 Edge cases specific to your implementation
+ * 🔧 Business logic validation tests
+ * 
+ * ─────────────────────────────────────────────────────────────────────────────
+ * RUNNING TESTS
+ * ─────────────────────────────────────────────────────────────────────────────
+ * npm test                    # Run all tests
+ * npm test {{seamName}}       # Run only this seam's tests
+ * npm test -- --coverage     # Run with coverage report
+ * 
+ * ─────────────────────────────────────────────────────────────────────────────
+ * CONTRACT REQUIREMENTS
+ * ─────────────────────────────────────────────────────────────────────────────
+ * This seam must handle:
+ * {{#errorTypes}}
+ * - {{name}}: {{description}} ({{code}})
+ * {{/errorTypes}}
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import {
+  {{seamName}}SeamBase,
+  {{seamName}}Input,
+  {{seamName}}Response,
+  {{seamName}}Example,
+  I{{seamName}}Seam,
+  create{{seamName}}Seam,
+  isSuccessResponse,
+  isErrorResponse,
+{{#errorTypes}}
+  {{seamName}}{{name}}Error,
+{{/errorTypes}}
+} from '../generated/{{seamName}}Seam';
+
+// Test implementation for testing
+class Test{{seamName}}Implementation extends {{seamName}}SeamBase {
+  private shouldFail = false;
+  private failureType = 'PROCESSING_ERROR';
+  
+  setFailure(shouldFail: boolean, failureType?: string) {
+    this.shouldFail = shouldFail;
+    this.failureType = failureType || 'PROCESSING_ERROR';
+  }
+  
+  async process(input: {{seamName}}Input): Promise<{{seamName}}Response> {
+    if (this.shouldFail) {
+      return this.createErrorResponse([{
+        code: this.failureType,
+        message: `Simulated ${this.failureType} error`
+      }]);
+    }
+    
+    // Mock successful processing
+    return this.createSuccessResponse({{successExampleOutput}});
+  }
+}
+
+describe('{{seamName}}Seam', () => {
+  let seam: Test{{seamName}}Implementation;
+  
+  beforeEach(() => {
+    seam = new Test{{seamName}}Implementation();
+  });
+  
+  afterEach(() => {
+    // Cleanup if needed
+  });
+
+  describe('Contract Compliance', () => {
+    it('should have correct metadata', () => {
+      const metadata = seam.getMetadata();
+      
+      expect(metadata.name).toBe('{{seamName}}');
+      expect(metadata.version).toBe('{{version}}');
+      expect(metadata.category).toBe('{{category}}');
+      expect(metadata.dependencies).toEqual([{{#dependencies}}'{{seamName}}'{{#hasNext}}, {{/hasNext}}{{/dependencies}}]);
+    });
+
+    it('should validate input correctly', () => {
+      const validInput = {{successExampleInput}};
+      expect(seam.validateInput(validInput)).toBe(true);
+      
+      const invalidInputs = [
+        null,
+        undefined,
+        'string',
+        123,
+        [],
+        {}
+      ];
+      
+      invalidInputs.forEach(input => {
+        expect(seam.validateInput(input)).toBe(false);
+      });
+    });
+  });
+
+  describe('Success Cases', () => {
+{{#examples}}
+    it('should handle {{name}}', async () => {
+      const input = {{inputData}};
+      const response = await seam.process(input);
+      
+      expect(isSuccessResponse(response)).toBe(true);
+      
+      if (isSuccessResponse(response)) {
+        expect(response.ok).toBe(true);
+        expect(response.data).toEqual({{outputData}});
+      }
+    });
+{{/examples}}
+
+    it('should use contract examples correctly', async () => {
+      const response = await seam.process({{seamName}}Example.successExample.input);
+      
+      expect(isSuccessResponse(response)).toBe(true);
+      
+      if (isSuccessResponse(response)) {
+        // Note: Exact match depends on implementation
+        expect(response.data).toBeDefined();
+      }
+    });
+  });
+
+  describe('Error Cases', () => {
+{{#errorExamples}}
+    it('should handle {{name}} error', async () => {
+      seam.setFailure(true, '{{errorCode}}');
+      
+      const input = {{inputData}};
+      const response = await seam.process(input);
+      
+      expect(isErrorResponse(response)).toBe(true);
+      
+      if (isErrorResponse(response)) {
+        expect(response.ok).toBe(false);
+        expect(response.errors).toHaveLength(1);
+        expect(response.errors[0].code).toBe('{{errorCode}}');
+      }
+    });
+{{/errorExamples}}
+
+{{#errorTypes}}
+    it('should throw {{name}}Error appropriately', () => {
+      const error = new {{seamName}}{{name}}Error('Test error', { detail: 'test' });
+      
+      expect(error.code).toBe('{{code}}');
+      expect(error.httpStatus).toBe({{httpStatus}});
+      expect(error.retryable).toBe({{retryable}});
+      expect(error.message).toBe('Test error');
+      expect(error.details).toEqual({ detail: 'test' });
+    });
+{{/errorTypes}}
+  });
+
+  describe('Type Guards', () => {
+    it('should correctly identify success responses', async () => {
+      const response = await seam.process({{successExampleInput}});
+      
+      if (isSuccessResponse(response)) {
+        // TypeScript should know this is a success response
+        expect(response.ok).toBe(true);
+        expect(response.data).toBeDefined();
+        // @ts-expect-error - errors should not exist on success response
+        expect(response.errors).toBeUndefined();
+      }
+    });
+
+    it('should correctly identify error responses', async () => {
+      seam.setFailure(true);
+      const response = await seam.process({{successExampleInput}});
+      
+      if (isErrorResponse(response)) {
+        // TypeScript should know this is an error response
+        expect(response.ok).toBe(false);
+        expect(response.errors).toBeDefined();
+        // @ts-expect-error - data should not exist on error response
+        expect(response.data).toBeUndefined();
+      }
+    });
+  });
+
+  describe('Factory Function', () => {
+    it('should create default implementation that throws', async () => {
+      const defaultSeam = create{{seamName}}Seam();
+      
+      await expect(defaultSeam.process({{successExampleInput}})).rejects.toThrow('{{seamName}}Seam not implemented');
+    });
+
+    it('should create custom implementation', async () => {
+      const customSeam = create{{seamName}}Seam({
+        process: async (input) => ({ ok: true, data: {{successExampleOutput}} }),
+        validateInput: (input): input is {{seamName}}Input => true,
+        getMetadata: () => ({
+          name: '{{seamName}}',
+          version: '{{version}}',
+          category: '{{category}}',
+          dependencies: []
+        })
+      });
+      
+      const response = await customSeam.process({{successExampleInput}});
+      expect(isSuccessResponse(response)).toBe(true);
+    });
+  });
+
+  describe('Helper Methods', () => {
+    it('should create success responses correctly', () => {
+      const data = {{successExampleOutput}};
+      const response = (seam as any).createSuccessResponse(data);
+      
+      expect(response.ok).toBe(true);
+      expect(response.data).toEqual(data);
+    });
+
+    it('should create error responses correctly', () => {
+      const errors = [{ code: 'TEST_ERROR', message: 'Test message' }];
+      const response = (seam as any).createErrorResponse(errors);
+      
+      expect(response.ok).toBe(false);
+      expect(response.errors).toEqual(errors);
+    });
+  });
+
+  describe('Integration Tests', () => {
+    // Add integration tests here for testing with actual dependencies
+    
+    it.skip('should integrate with dependencies', async () => {
+      // TODO: Test integration with actual dependent seams
+    });
+
+    it.skip('should handle timeout scenarios', async () => {
+      // TODO: Test timeout handling
+    });
+
+    it.skip('should handle concurrent requests', async () => {
+      // TODO: Test concurrent processing
+    });
+  });
+
+  describe('Performance Tests', () => {
+    it.skip('should process within acceptable time limits', async () => {
+      const startTime = Date.now();
+      await seam.process({{successExampleInput}});
+      const duration = Date.now() - startTime;
+      
+      // Adjust threshold based on your requirements
+      expect(duration).toBeLessThan(1000);
+    });
+
+    it.skip('should handle large inputs', async () => {
+      // TODO: Test with large input data
+    });
+  });
+});
+
+// Utility functions for testing
+export const {{seamName}}TestUtils = {
+  createMockInput: (overrides?: Partial<{{seamName}}Input>): {{seamName}}Input => {
+    return {
+      ...{{successExampleInput}},
+      ...overrides
+    };
+  },
+  
+  createMockSuccessResponse: (data?: Partial<{{seamName}}Output>): {{seamName}}SuccessResponse => {
+    return {
+      ok: true,
+      data: {
+        ...{{successExampleOutput}},
+        ...data
+      }
+    };
+  },
+  
+  createMockErrorResponse: (code: string, message: string): {{seamName}}ErrorResponse => {
+    return {
+      ok: false,
+      errors: [{ code, message }]
+    };
+  }
+};
+
+// Export test implementation for use in other tests
+export { Test{{seamName}}Implementation };
