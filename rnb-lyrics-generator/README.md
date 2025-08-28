@@ -59,6 +59,13 @@ If you run the SDD server (port 3333) and configure a Gemini API key, the Genera
 When backend is unavailable, the UI falls back to a mock and shows a small toast on localhost.
 - If you add devices, ensure each has: id, name, definition, example, category.
 
+### Deployment notes
+
+- Configure the backend URL without rebuilding by editing `public/config.json`:
+  - { "backendBaseUrl": "https://your-backend.example.com" }
+- Default is `http://localhost:3333` for local development.
+- The app is static and can be hosted on any static host (GitHub Pages, Netlify, etc.).
+
 ## Troubleshooting
 
 - If devices don’t load, ensure the dev server is running from the rnb-lyrics-generator directory and that data/devices.json exists.

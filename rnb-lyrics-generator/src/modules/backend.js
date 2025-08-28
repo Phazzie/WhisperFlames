@@ -1,5 +1,24 @@
 // backend.js
 // Purpose: Call the backend /generate endpoint with the contract-ish payload.
+// The backend base URL is configurable via public/config.json -> { "backendBaseUrl": "http://host:port" }
+
+let BASE_URL_CACHE = null;
+async function getBaseUrl() {
+  if (BASE_URL_CACHE) return BASE_URL_CACHE;
+  try {
+    const resp = await fetch('./config.json', { cache: 'no-cache' });
+    if (resp.ok) {
+      const cfg = await resp.json();
+      if (cfg && typeof cfg.backendBaseUrl === 'string' && cfg.backendBaseUrl.trim()) {
+        BASE_URL_CACHE = cfg.backendBaseUrl.trim().replace(/\/$/, '');
+        return BASE_URL_CACHE;
+      }
+    }
+  } catch {}
+  // fallback to local dev default
+  BASE_URL_CACHE = 'http://localhost:3333';
+  return BASE_URL_CACHE;
+}
 
 export async function generateLyricsViaBackend(appState) {
   const payload = {
@@ -15,7 +34,8 @@ export async function generateLyricsViaBackend(appState) {
   };
 
   try {
-    const resp = await fetch('http://localhost:3333/generate', {
+    const base = await getBaseUrl();
+    const resp = await fetch(`${base}/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

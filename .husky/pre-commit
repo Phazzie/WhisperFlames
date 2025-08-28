@@ -4,7 +4,7 @@
 echo "🚧 SDD Pre-commit Validation..."
 
 # Check if any staged files are in src/generated/
-staged_generated_files=$(git diff --cached --name-only | grep "^src/generated/")
+staged_generated_files=$(git diff --cached --name-only | grep "^src/generated/" || true)
 
 if [ -n "$staged_generated_files" ]; then
   echo "🚨 Files in src/generated/ are staged for commit:"
@@ -41,7 +41,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check for direct contract edits (should be new versions instead)
-staged_contracts=$(git diff --cached --name-only | grep "^contracts/.*\.yml$")
+staged_contracts=$(git diff --cached --name-only | grep "^contracts/.*\.yml$" || true)
 if [ -n "$staged_contracts" ]; then
   for contract in $staged_contracts; do
     if git show HEAD:"$contract" >/dev/null 2>&1; then
