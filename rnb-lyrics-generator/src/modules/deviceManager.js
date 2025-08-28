@@ -2,9 +2,26 @@
 // Purpose: Load devices.json, and provide rendering helpers used by screens.
 
 export async function loadDevices() {
-  const res = await fetch('../data/devices.json');
-  if (!res.ok) throw new Error('Failed to load devices.json');
-  return res.json();
+  // Try common URL variants depending on how the app is hosted
+  const candidates = [
+    '/data/devices.json',
+    './data/devices.json',
+    '../data/devices.json'
+  ];
+  let lastErr;
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (!res.ok) continue;
+      const json = await res.json();
+      if (Array.isArray(json) && json.length > 0) return json;
+      // If file exists but empty/invalid, keep trying other candidates
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  console.error('[devices] Failed to load devices.json from candidates', candidates, lastErr);
+  return [];
 }
 
 export function byId(DEVICES, id) { return DEVICES.find(d => d.id === id); }
@@ -32,6 +49,13 @@ export function makeDeviceCard(device, opts) {
 
 export function renderDeviceGrid(containerEl, DEVICES, selectedSet, disabledSet, max, onChange) {
   containerEl.innerHTML = '';
+  if (!DEVICES || DEVICES.length === 0) {
+    const msg = document.createElement('div');
+    msg.className = 'empty';
+    msg.textContent = 'No devices available. Check that /data/devices.json is being served by your dev server.';
+    containerEl.appendChild(msg);
+    return;
+  }
   DEVICES.forEach(d => {
     const card = makeDeviceCard(d, {
       selected: selectedSet.has(d.id),
